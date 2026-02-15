@@ -1,0 +1,42 @@
+<div class="usuarios-container">
+  <div class="table-header">
+    <h2>Gestión de Usuarios</h2>
+    <button class="btn-new">
+      <span class="icon">+</span> Nuevo Usuario
+    </button>
+  </div>
+
+  <div class="table-card">
+    <table class="styled-table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Rol</th>
+      </tr>
+      </thead>
+      <tbody>
+      @for (u of usuarios; track u.id) {
+      <tr>
+        <td class="id-column">{{ u.id }}</td>
+        <td class="user-column">
+          <div class="user-info">
+            <div class="avatar">{{ u.username.charAt(0).toUpperCase() }}</div>
+            <span>{{ u.username }}</span>
+          </div>
+        </td>
+        <td>
+          <span class="badge" [ngClass]="u.rol">{{ u.rol }}</span>
+        </td>
+      </tr>
+      } @empty {
+      <tr>
+        <td colspan="3" class="empty-state">
+          No hay usuarios activos en el sistema.
+        </td>
+      </tr>
+      }
+      </tbody>
+    </table>
+  </div>
+</div>

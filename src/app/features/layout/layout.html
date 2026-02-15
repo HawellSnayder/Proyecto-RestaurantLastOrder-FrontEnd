@@ -1,0 +1,28 @@
+<div class="app-container">
+  <aside class="sidebar">
+    <div class="logo">
+      <h2>Last Order</h2>
+      <small>{{ username }}</small>
+    </div>
+
+    <nav class="nav-menu">
+      <a *ngFor="let item of menuItems"
+         [routerLink]="item.path"
+         routerLinkActive="active-link">
+        {{ item.label }}
+      </a>
+    </nav>
+
+    <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <span>Panel de Control - {{ rol }}</span>
+    </header>
+
+    <section class="page-container">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>
