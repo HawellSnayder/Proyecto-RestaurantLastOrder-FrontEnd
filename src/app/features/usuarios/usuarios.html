@@ -1,38 +1,76 @@
 <div class="usuarios-container">
   <div class="table-header">
-    <h2>Gestión de Usuarios</h2>
-    <button class="btn-new">
-      <span class="icon">+</span> Nuevo Usuario
+    <h2>{{ mostrarFormulario ? 'Registrar Nuevo Usuario' : 'Gestión de Usuarios' }}</h2>
+    <button [class]="mostrarFormulario ? 'btn-cancel' : 'btn-new'" (click)="toggleFormulario()">
+      <span class="icon">{{ mostrarFormulario ? '✕' : '+' }}</span>
+      {{ mostrarFormulario ? 'Cancelar' : 'Nuevo Usuario' }}
     </button>
   </div>
+
+  @if (mostrarFormulario) {
+  <div class="form-card animate-in">
+    <div class="form-content">
+      <div class="input-field">
+        <label>Nombre Completo</label>
+        <input type="text" [(ngModel)]="nuevoUsuario.nombre" placeholder="Ej: Hawell Snayder">
+      </div>
+
+      <div class="input-field">
+        <label>Usuario (Username)</label>
+        <input type="text" [(ngModel)]="nuevoUsuario.username" placeholder="ej: hawell123">
+      </div>
+
+      <div class="input-field">
+        <label>Contraseña</label>
+        <input type="password" [(ngModel)]="nuevoUsuario.password" placeholder="********">
+      </div>
+
+      <div class="input-field">
+        <label>Rol del Sistema</label>
+        <select [(ngModel)]="nuevoUsuario.rolId">
+          <option [value]="1">Administrador</option>
+          <option [value]="2">Cajero</option>
+          <option [value]="3">Cocina</option>
+         <option [value]="4">Mesero</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-save" (click)="registrarUsuario()">
+          💾 Guardar Usuario
+        </button>
+      </div>
+    </div>
+  </div>
+  }
 
   <div class="table-card">
     <table class="styled-table">
       <thead>
       <tr>
-        <th>ID</th>
-        <th>Usuario</th>
-        <th>Rol</th>
-      </tr>
+        <th class="id-column">ID</th>
+        <th>USUARIO</th>
+        <th>ROL</th>
+        <th class="text-center">ACCIONES</th> </tr>
       </thead>
       <tbody>
       @for (u of usuarios; track u.id) {
       <tr>
         <td class="id-column">{{ u.id }}</td>
-        <td class="user-column">
+        <td>
           <div class="user-info">
-            <div class="avatar">{{ u.username.charAt(0).toUpperCase() }}</div>
-            <span>{{ u.username }}</span>
+            <div class="avatar">{{ (u.nombre || u.username).charAt(0).toUpperCase() }}</div>
+            <div class="user-text">
+              <span class="full-name">{{ u.nombre }}</span>
+              <small class="user-tag">@{{ u.username }}</small>
+            </div>
           </div>
         </td>
-        <td>
-          <span class="badge" [ngClass]="u.rol">{{ u.rol }}</span>
-        </td>
-      </tr>
-      } @empty {
-      <tr>
-        <td colspan="3" class="empty-state">
-          No hay usuarios activos en el sistema.
+        <td><span class="badge" [ngClass]="u.rol">{{ u.rol }}</span></td>
+        <td class="text-center">
+          <button class="btn-delete" (click)="desactivarUsuario(u)" title="Desactivar">
+            🗑️
+          </button>
         </td>
       </tr>
       }

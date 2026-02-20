@@ -3,10 +3,28 @@ import { LoginComponent } from './features/login/login';
 import { LayoutComponent } from './features/layout/layout';
 import { UsuariosComponent } from './features/usuarios/usuarios'; // Asegúrate de importar esto
 import { authGuard } from './core/guards/auth.guard';
+import { CategoriasComponent } from './features/categorias/categorias';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' }, // Si entran a localhost:4200, van a login
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  { path: 'usuarios', component: UsuariosComponent, canActivate: [authGuard] }, // Agregamos protección
-  { path: '**', redirectTo: 'login' } // Cualquier ruta desconocida va a login
+
+  // RUTAS PROTEGIDAS (Envueltas en el Layout)
+  {
+    path: '',
+    component: LayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      { path: 'usuarios', component: UsuariosComponent },
+      { path: 'categorias', component: CategoriasComponent },
+
+      // 1. AGREGA ESTA LÍNEA (y crea el componente si no lo tienes)
+      { path: 'pedidos', component: CategoriasComponent },
+
+      // Ejemplo de otra ruta para meseros
+      // { path: 'mesas', component: MesasComponent },
+    ]
+  },
+
+  { path: '**', redirectTo: 'login' }
 ];

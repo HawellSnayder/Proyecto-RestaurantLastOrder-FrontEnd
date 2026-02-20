@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Necesario para [(ngModel)]
+import { Component, inject, PLATFORM_ID, Inject } from '@angular/core'; // Agregamos PLATFORM_ID
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth';
 import { Router } from '@angular/router';
 import { LoginResponseDTO } from '../../core/models/auth.model';
@@ -8,7 +8,7 @@ import { LoginResponseDTO } from '../../core/models/auth.model';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Importante agregarlos aquí
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
@@ -17,15 +17,33 @@ export class LoginComponent {
   password = '';
   error = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   onLogin() {
     this.auth.login({ username: this.user, password: this.password }).subscribe({
       next: (res: LoginResponseDTO) => {
-        if (res.rol === 'ADMIN') this.router.navigate(['/usuarios']);
-        else this.router.navigate(['/pedidos']);
+        // Solo operamos con localStorage si estamos en el navegador
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('rol', res.rol);
+          localStorage.setItem('username', this.user);
+          localStorage.setItem('user', JSON.stringify({ username: this.user, rol: res.rol }));
+
+          // Definimos la ruta destino según el rol
+          const rutaDestino = res.rol === 'ADMIN' ? '/usuarios' : '/pedidos';
+
+          // Usamos window.location.assign para forzar la recarga completa.
+          // Esto asegura que el WebsocketService se reinicie y lea el nuevo localStorage.
+          window.location.assign(rutaDestino);
+        }
       },
-      error: () => this.error = 'Credenciales inválidas'
+      error: (err) => {
+        console.error(err);
+        this.error = 'Credenciales inválidas o error de servidor';
+      }
     });
   }
 }

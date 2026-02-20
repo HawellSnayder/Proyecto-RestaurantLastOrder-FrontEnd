@@ -1,6 +1,7 @@
 // Coincide con UsuarioResponseDTO
 export interface UsuarioResponseDTO {
   id: number;
+  nombre: string;
   username: string;
   rol: string; // Aquí llega directo "ADMIN", "MESERO", etc.
 }

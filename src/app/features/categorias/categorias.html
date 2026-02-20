@@ -1,0 +1,42 @@
+<div class="categorias-container">
+  <div class="header-section">
+    <h2>📂 Gestión de Categorías</h2>
+    <p>Crea y administra las categorías de tu menú en tiempo real.</p>
+  </div>
+
+  <div class="card-form">
+    <div class="form-group">
+      <input type="text" [(ngModel)]="nuevaCategoria.nombre" placeholder="Nombre (ej. Bebidas)">
+      <input type="text" [(ngModel)]="nuevaCategoria.descripcion" placeholder="Descripción corta">
+      <button class="btn-save" (click)="agregarCategoria()">
+        <span class="icon">➕</span> Agregar
+      </button>
+    </div>
+  </div>
+
+  <div class="grid-categorias">
+    @for (cat of categorias; track cat.id) {
+    <div class="categoria-card" [class.inactive-card]="!cat.activo">
+      <div class="card-icon">📁</div>
+      <div class="card-content">
+        <h3>{{ cat.nombre }}</h3>
+        <p>{{ cat.descripcion || 'Sin descripción' }}</p>
+      </div>
+
+      <div class="card-actions">
+        <button (click)="toggleEstado(cat)" [class.btn-disable]="cat.activo" [class.btn-enable]="!cat.activo">
+          {{ cat.activo ? 'Desactivar' : 'Activar' }}
+        </button>
+
+        <button class="btn-delete" (click)="eliminarCategoria(cat.id)" title="Eliminar definitivamente">
+          🗑️
+        </button>
+      </div>
+    </div>
+    } @empty {
+    <div class="empty-state">
+      <p class="empty-msg">No hay categorías registradas aún.</p>
+    </div>
+    }
+  </div>
+</div>

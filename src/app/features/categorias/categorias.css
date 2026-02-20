@@ -1,0 +1,87 @@
+.categorias-container { padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+.header-section h2 { color: #1a1a2e; margin-bottom: 20px; }
+
+.card-form {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  margin-bottom: 30px;
+}
+
+.card-form input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.btn-save {
+  background: #e94560;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn-save:hover { background: #d63d57; }
+
+.grid-categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.categoria-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column; /* Cambiado a columna para mejor control de botones */
+  gap: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border-bottom: 4px solid #1a1a2e;
+  transition: 0.3s;
+}
+
+.categoria-card:hover { transform: translateY(-5px); }
+
+.card-header { display: flex; align-items: center; gap: 15px; }
+
+.card-icon { font-size: 2rem; }
+
+.card-content h3 { margin: 0; color: #1a1a2e; font-size: 1.1rem; }
+.card-content p { margin: 5px 0 0; color: #666; font-size: 0.85rem; }
+
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.badge-status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  background: #ff4757;
+  color: white;
+}
+
+.badge-status.active { background: #2ecc71; }
+
+.btn-enable { background: #2ecc71; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+.btn-disable { background: #e67e22; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+.btn-delete { background: #f1f2f6; color: #ff4757; border: 1px solid #ff4757; padding: 6px 12px; border-radius: 4px; cursor: pointer; transition: 0.3s; }
+.btn-delete:hover { background: #ff4757; color: white; }
+
+.inactive-card { opacity: 0.7; filter: grayscale(0.6); border-bottom-color: #ccc; }

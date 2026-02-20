@@ -1,24 +1,35 @@
 <div class="app-container">
   <aside class="sidebar">
     <div class="logo">
-      <h2>Last Order</h2>
-      <small>{{ username }}</small>
+      <h2>🍽️ Last Order</h2>
+      <div class="user-info">
+        <span class="user-dot"></span>
+        <small>{{ username }}</small>
+      </div>
     </div>
 
     <nav class="nav-menu">
-      <a *ngFor="let item of menuItems"
-         [routerLink]="item.path"
-         routerLinkActive="active-link">
+      @for (item of menuItems; track item.path) {
+      <a [routerLink]="item.path"
+         routerLinkActive="active-link"
+         class="menu-item">
         {{ item.label }}
       </a>
+      }
     </nav>
 
-    <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
+    <button class="logout-btn" (click)="logout()">
+      <span>🚪</span> Cerrar Sesión
+    </button>
   </aside>
 
   <main class="main-content">
     <header class="top-bar">
-      <span>Panel de Control - {{ rol }}</span>
+      <div class="breadcrumb">
+        <span>Sistema de Restaurante</span>
+        <span class="divider">/</span>
+        <span class="role-badge">{{ rol }}</span>
+      </div>
     </header>
 
     <section class="page-container">

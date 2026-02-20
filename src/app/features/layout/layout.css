@@ -6,18 +6,44 @@
 }
 
 .sidebar {
-  width: 250px;
+  width: 260px; /* Un poco más de ancho para los emojis */
   background-color: #1a1a2e;
   color: white;
   display: flex;
   flex-direction: column;
   padding: 20px 0;
+  flex-shrink: 0; /* Evita que el sidebar se encoja */
 }
 
 .logo {
   text-align: center;
-  padding-bottom: 20px;
+  padding: 0 20px 20px 20px;
   border-bottom: 1px solid #16213e;
+}
+
+.logo h2 {
+  margin: 0;
+  color: #e94560;
+  font-size: 1.5rem;
+}
+
+/* Badge de usuario debajo del logo */
+.user-info {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 5px;
+  border-radius: 20px;
+}
+
+.user-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #2ecc71;
+  border-radius: 50%;
 }
 
 .nav-menu {
@@ -25,15 +51,18 @@
   margin-top: 20px;
 }
 
-.nav-menu a {
-  display: block;
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Espacio para el emoji */
   color: #adb5bd;
   padding: 15px 25px;
   text-decoration: none;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
 }
 
-.nav-menu a:hover, .active-link {
+.menu-item:hover, .active-link {
   background-color: #0f3460;
   color: white !important;
   border-left: 4px solid #e94560;
@@ -44,6 +73,7 @@
   background-color: #f4f7f6;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Evita scrolls dobles */
 }
 
 .top-bar {
@@ -53,20 +83,51 @@
   align-items: center;
   padding: 0 30px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  font-weight: bold;
+  justify-content: space-between;
+}
+
+/* Estilo para el Breadcrumb y Rol */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1a1a2e;
+}
+
+.divider { color: #dee2e6; }
+
+.role-badge {
+  background: #16213e;
+  color: #e94560;
+  padding: 3px 12px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
 }
 
 .page-container {
   padding: 25px;
   overflow-y: auto;
+  flex-grow: 1;
 }
 
 .logout-btn {
   margin: 20px;
-  padding: 10px;
+  padding: 12px;
+  background: transparent;
+  color: #e94560;
+  border: 1px solid #e94560;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: bold;
+}
+
+.logout-btn:hover {
   background: #e94560;
   color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
