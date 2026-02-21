@@ -1,0 +1,98 @@
+<div class="platos-container">
+  <div class="header-section">
+    <h2>🍽️ Gestión de Menú (Platos)</h2>
+    <button class="btn-toggle-form" [class.active]="mostrarFormulario" (click)="toggleFormulario()">
+      {{ mostrarFormulario ? '✕ Cerrar' : '+ Agregar Comida' }}
+    </button>
+  </div>
+
+  <div class="filter-container">
+    <div class="filter-bar">
+      <button
+        [class.active]="categoriaSeleccionada === null"
+        (click)="limpiarFiltro()"
+        class="chip">
+        Todos
+      </button>
+
+      @for (cat of categorias; track cat.id) {
+      <button
+        [class.active]="categoriaSeleccionada === cat.id"
+        (click)="seleccionarCategoria(cat.id)"
+        class="chip">
+        {{ cat.nombre }}
+      </button>
+      }
+    </div>
+
+    @if (categoriaSeleccionada !== null) {
+    <button class="btn-clear" (click)="limpiarFiltro()">
+      ✕ Quitar Filtros
+    </button>
+    }
+  </div>
+
+  @if (mostrarFormulario) {
+  <div class="card-form animate-slide-down">
+    <div class="form-inputs">
+      <input type="text" [(ngModel)]="nuevoPlato.nombre" placeholder="Nombre del plato">
+      <input type="number" [(ngModel)]="nuevoPlato.precio" placeholder="Precio (S/)">
+
+      <select [(ngModel)]="nuevoPlato.categoriaId">
+        <option [value]="0" disabled selected>Seleccione Categoría</option>
+        @for (cat of categorias; track cat.id) {
+        <option [value]="cat.id">{{ cat.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-upload">
+      <label class="custom-file-upload">
+        <input type="file" (change)="onFileSelected($event)" accept="image/*">
+        <span>{{ archivoSeleccionado ? '📷 Foto Lista' : '📁 Subir Foto' }}</span>
+      </label>
+
+      <div class="form-actions">
+        <button class="btn-cancel" (click)="toggleFormulario()">Cancelar</button>
+        <button class="btn-save" (click)="guardarPlato()">Guardar Plato</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="grid-platos">
+    @for (plato of platosFiltrados; track plato.id) {
+    <div class="plato-card" [class.no-disponible]="!plato.disponible">
+
+      <button class="btn-delete-card" (click)="eliminarPlato(plato.id)" title="Eliminar plato">
+        🗑️
+      </button>
+
+      <div class="plato-image-container">
+        @if (plato.imagenBase64) {
+        <img [src]="'data:image/png;base64,' + plato.imagenBase64" alt="Imagen plato">
+        } @else {
+        <div class="img-placeholder">🍽️</div>
+        }
+      </div>
+
+      <div class="plato-content">
+        <div class="plato-info">
+          <span class="plato-cat">{{ plato.categoria }}</span>
+          <h3>{{ plato.nombre }}</h3>
+          <p class="plato-precio">{{ plato.precio | currency:'S/' }}</p>
+        </div>
+
+        <div class="plato-actions">
+          <button
+            (click)="toggleDisponibilidad(plato)"
+            [class.btn-enable]="!plato.disponible"
+            [class.btn-disable]="plato.disponible">
+            {{ plato.disponible ? 'Agotar' : 'Reponer' }}
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>

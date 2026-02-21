@@ -32,9 +32,9 @@ export class LayoutComponent implements OnInit {
   definirMenu() {
     const opciones = [
       { label: '👥 Usuarios', path: '/usuarios', roles: ['ADMIN'] },
-      { label: '📂 Categorías', path: '/categorias', roles: ['ADMIN'] },
-      { label: '🍴 Platos/Menú', path: '/platos', roles: ['ADMIN'] },
-      { label: '🪑 Mesas', path: '/mesas', roles: ['ADMIN', 'MESERO'] },
+            { label: '📂 Categorías', path: '/categorias', roles: ['ADMIN'] },
+            { label: '🍴 Platos/Menú', path: '/platos', roles: ['ADMIN'] },
+            { label: '🪑 Mesas', path: '/mesas', roles: ['ADMIN', 'MESERO'] },
       { label: '✍️ Crear Pedido', path: '/pedidos/nuevo', roles: ['ADMIN', 'MESERO'] },
       { label: '⏳ Pedidos Pendientes', path: '/pedidos/pendientes', roles: ['ADMIN', 'MESERO'] },
       { label: '🍳 Cocina', path: '/cocina', roles: ['ADMIN', 'COCINA'] },
@@ -42,7 +42,14 @@ export class LayoutComponent implements OnInit {
     ];
 
     this.menuItems = opciones.filter(opt => opt.roles.includes(this.rol));
+    const rolSuperior = this.rol.toUpperCase();
+        this.menuItems = opciones.filter(opt => opt.roles.includes(rolSuperior));
+
+        // LOG DE DEPURACIÓN: Si ves la consola (F12), verás qué está pasando
+        console.log('Tu rol actual es:', rolSuperior);
+        console.log('Items de menú permitidos:', this.menuItems);
   }
+
 
   logout() {
     if (isPlatformBrowser(this.platformId)) {

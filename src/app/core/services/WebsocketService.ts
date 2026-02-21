@@ -12,12 +12,20 @@ export class WebsocketService {
   private router = inject(Router);
   private idDesactivadoSubject = new Subject<number>();
   private categoriaCambioSubject = new Subject<any>();
+  private platoCambioSubject = new Subject<any>(); // Declarado correctamente
 
   private stompClient!: Client;
   private platformId = inject(PLATFORM_ID);
-
-  // Guardamos las suscripciones para poder limpiarlas si es necesario
   private subscriptions: StompSubscription[] = [];
+
+  public watch(topic: string) {
+    return new Observable(observer => {
+      const subscription = this.stompClient.subscribe(topic, (message: any) => {
+        observer.next(JSON.parse(message.body));
+      });
+      return () => subscription.unsubscribe();
+    });
+  }
 
   constructor() {
     this.configurarConexion();
@@ -26,7 +34,6 @@ export class WebsocketService {
   private configurarConexion() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Usamos el endpoint que definiste en Java
     const socket = new SockJS('http://localhost:9090/ws-repro');
 
     this.stompClient = new Client({
@@ -44,21 +51,16 @@ export class WebsocketService {
     this.stompClient.activate();
   }
 
-  /**
-   * Centraliza todas las suscripciones para que se reactiven al reconectar
-   */
   private suscribirCanales() {
-    // Limpiamos suscripciones previas para evitar duplicados al reconectar
     this.subscriptions.forEach(s => s.unsubscribe());
     this.subscriptions = [];
 
     const username = localStorage.getItem('username');
 
-    // 1. CANAL DE CATEGORÍAS (General para todos)
+    // 1. CANAL DE CATEGORÍAS
     const catSub = this.stompClient.subscribe('/topic/categorias', (message) => {
       try {
         const eventoDto = JSON.parse(message.body);
-        console.log('📦 Socket Categoría:', eventoDto);
         this.categoriaCambioSubject.next(eventoDto);
       } catch (e) {
         console.error('Error parseando JSON de categoría', e);
@@ -66,17 +68,25 @@ export class WebsocketService {
     });
     this.subscriptions.push(catSub);
 
-    // 2. CANALES DE USUARIO (Si está logueado)
-    if (username) {
-      console.log(`📡 Escuchando canales privados para: ${username}`);
+    // 2. CANAL DE PLATOS (Lo sacamos del IF para que funcione siempre)
+    const platoSub = this.stompClient.subscribe('/topic/platos', (message) => {
+      try {
+        const eventoPlato = JSON.parse(message.body);
+        console.log('🍽️ Socket Plato:', eventoPlato);
+        this.platoCambioSubject.next(eventoPlato);
+      } catch (e) {
+        console.error('Error parseando JSON de plato', e);
+      }
+    });
+    this.subscriptions.push(platoSub);
 
-      // Logout forzado
+    // 3. CANALES PRIVADOS (Solo con login)
+    if (username) {
       const logoutSub = this.stompClient.subscribe(`/topic/logout/${username}`, (message) => {
         this.forzarLogout(message.body);
       });
       this.subscriptions.push(logoutSub);
 
-      // Usuarios desactivados (Para la tabla de Admin)
       const userSub = this.stompClient.subscribe('/topic/usuarios-desactivados', (message) => {
         this.idDesactivadoSubject.next(Number(message.body));
       });
@@ -84,7 +94,7 @@ export class WebsocketService {
     }
   }
 
-  // --- MÉTODOS PARA COMPONENTES ---
+  // --- MÉTODOS PARA COMPONENTES (Aquí faltaba el de platos) ---
 
   getDesactivaciones(): Observable<number> {
     return this.idDesactivadoSubject.asObservable();
@@ -94,10 +104,11 @@ export class WebsocketService {
     return this.categoriaCambioSubject.asObservable();
   }
 
-  /**
-   * Útil para cuando el usuario hace login: reinicia las suscripciones
-   * para activar el canal de logout sin refrescar la página.
-   */
+  // ESTE ES EL QUE TE DABA EL ERROR TS2339 🔥
+  getPlatoCambios(): Observable<any> {
+    return this.platoCambioSubject.asObservable();
+  }
+
   actualizarSuscripcionesPostLogin() {
     if (this.stompClient && this.stompClient.connected) {
       this.suscribirCanales();

@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef, PLATFORM_ID, Inject } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common'; // <-- Importar isPlatformBrowser
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { UsuarioService } from '../../core/services/usuario';
 import { UsuarioResponseDTO, CrearUsuarioRequestDTO } from '../../core/models/usuario.model';
 import { FormsModule } from '@angular/forms';
@@ -15,6 +15,7 @@ import { WebsocketService } from '../../core/services/WebsocketService';
 export class UsuariosComponent implements OnInit {
   usuarios: UsuarioResponseDTO[] = [];
   mostrarFormulario = false;
+  cargando = true;
 
   nuevoUsuario: CrearUsuarioRequestDTO = {
     nombre: '',
@@ -23,49 +24,89 @@ export class UsuariosComponent implements OnInit {
     rolId: 2
   };
 
-  // Inyecciones
   private usuarioService = inject(UsuarioService);
   private cdr = inject(ChangeDetectorRef);
   private wsService = inject(WebsocketService);
 
-  // Constructor necesario para capturar el ID de la plataforma (SSR)
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
-  ngOnInit(): void {
-    // 1. Verificamos que estamos en el navegador para evitar errores de SSR
-    if (isPlatformBrowser(this.platformId)) {
+  private inicializarComponente(): void {
       this.cargarUsuarios();
 
-      // 2. Escuchamos al WebSocket para actualizar la tabla en tiempo real
-      this.wsService.getDesactivaciones().subscribe((idAEliminar) => {
-        console.log('Filtrando usuario con ID:', idAEliminar);
-        this.usuarios = this.usuarios.filter(u => u.id !== idAEliminar);
-        this.cdr.detectChanges(); // Forzamos el refresco de la vista
+      // Escucha de WebSockets
+      this.wsService.getDesactivaciones().subscribe({
+        next: (idRecibido) => {
+          if (idRecibido) {
+            this.cargarUsuarios();
+          }
+        }
       });
+    }
+  ngOnInit(): void {
+      // Es vital verificar el platformId para SSR
+      if (isPlatformBrowser(this.platformId)) {
+        this.inicializarComponente();
+      }
+    }
+
+  cargarUsuarios(): void {
+      this.cargando = true;
+      this.usuarioService.listarTodos().subscribe({
+        next: (data: UsuarioResponseDTO[]) => {
+          this.usuarios = data;
+          this.cargando = false;
+
+          // Ejecutamos esto en un pequeño timeout para asegurar que el DOM esté listo
+          setTimeout(() => {
+            this.cdr.markForCheck(); // Marca para verificar
+            this.cdr.detectChanges(); // Fuerza el renderizado
+          }, 0);
+        },
+        error: (err) => {
+          console.error('Error al cargar:', err);
+          this.cargando = false;
+          this.cdr.detectChanges();
+        }
+      });
+    }
+
+  // FIJATE AQUÍ: He arreglado la lógica para que sirva para ambos estados
+  toggleEstado(u: UsuarioResponseDTO) {
+    const proximoEstado = !u.activo;
+    const accionTexto = proximoEstado ? 'activar' : 'desactivar';
+
+    if (confirm(`¿Estás seguro de ${accionTexto} a ${u.nombre || u.username}?`)) {
+      if (proximoEstado) {
+        // Lógica para ACTIVAR
+        this.usuarioService.activar(u.id).subscribe({
+          next: () => {
+            u.activo = true; // Actualizamos la vista
+            this.cdr.detectChanges();
+          },
+          error: (err) => alert('Error al activar el usuario')
+        });
+      } else {
+        // Lógica para DESACTIVAR
+        this.usuarioService.desactivarUsuario(u.id).subscribe({
+          next: () => {
+            u.activo = false; // Actualizamos la vista
+            this.cdr.detectChanges();
+          },
+          error: (err) => alert('Error al desactivar el usuario')
+        });
+      }
     }
   }
 
-  cargarUsuarios(): void {
-    this.usuarioService.getActivos().subscribe({
-      next: (data: UsuarioResponseDTO[]) => {
-        this.usuarios = data;
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Error al cargar usuarios:', err)
-    });
-  }
-
-  // Método para desactivar (Llamado desde el botón de la tabla)
-  desactivarUsuario(u: UsuarioResponseDTO) {
-    if (confirm(`¿Estás seguro de desactivar a ${u.nombre || u.username}?`)) {
-      this.usuarioService.desactivarUsuario(u.id).subscribe({
+  eliminarUsuario(id: number, username: string) {
+    if (confirm(`⚠️ ¿ELIMINAR PERMANENTEMENTE a @${username}?\nEsta acción no se puede deshacer y fallará si el usuario tiene historial.`)) {
+      this.usuarioService.eliminar(id).subscribe({
         next: () => {
-          // El WebSocket recibirá el mensaje y filtrará la lista automáticamente
-          console.log('Desactivación exitosa en servidor');
+          this.usuarios = this.usuarios.filter(u => u.id !== id);
+          this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error(err);
-          alert('Error al intentar desactivar');
+          alert('No se puede eliminar: El usuario tiene registros asociados. Use "Desactivar".');
         }
       });
     }
@@ -78,11 +119,10 @@ export class UsuariosComponent implements OnInit {
     }
     this.usuarioService.crearUsuario(this.nuevoUsuario).subscribe({
       next: () => {
-        alert('Usuario guardado con éxito');
         this.cargarUsuarios();
         this.toggleFormulario();
       },
-      error: (err) => alert('Error al crear el usuario')
+      error: () => alert('Error al crear el usuario')
     });
   }
 
@@ -92,11 +132,6 @@ export class UsuariosComponent implements OnInit {
   }
 
   limpiarFormulario() {
-    this.nuevoUsuario = {
-      nombre: '',
-      username: '',
-      password: '',
-      rolId: 2
-    };
+    this.nuevoUsuario = { nombre: '', username: '', password: '', rolId: 2 };
   }
 }

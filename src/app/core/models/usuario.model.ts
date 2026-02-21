@@ -3,6 +3,7 @@ export interface UsuarioResponseDTO {
   id: number;
   nombre: string;
   username: string;
+  activo: boolean;
   rol: string; // Aquí llega directo "ADMIN", "MESERO", etc.
 }
 

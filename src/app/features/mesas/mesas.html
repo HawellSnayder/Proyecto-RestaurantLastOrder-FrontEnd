@@ -1,0 +1,38 @@
+<div class="mesas-page-wrapper">
+  <div class="mesas-header">
+    <h1>Panel de Mesas</h1>
+    <button class="btn-add-mesa" (click)="mostrarFormulario = !mostrarFormulario">
+      {{ mostrarFormulario ? '✕ Cancelar' : '＋ Nueva Mesa' }}
+    </button>
+  </div>
+
+  <div *ngIf="mostrarFormulario" class="card-formulario">
+    <div class="form-row">
+      <input type="number" class="custom-input" [(ngModel)]="nuevaMesa.numero" placeholder="Nº Mesa">
+      <input type="number" class="custom-input" [(ngModel)]="nuevaMesa.capacidad" placeholder="Capacidad">
+      <button class="btn-add-mesa" (click)="guardarMesa()">Confirmar</button>
+    </div>
+  </div>
+
+  <div class="mesas-grid">
+    <div *ngFor="let mesa of mesas"
+         class="mesa-card"
+         [ngClass]="mesa.estado.toLowerCase()"
+         (click)="seleccionarMesa(mesa.id)">
+
+      <div class="mesa-actions-overlay" *ngIf="mesaActivaId === mesa.id">
+        <button *ngIf="mesa.estado === 'LIBRE'" (click)="ejecutarAccion(mesa.id, 'ocupar'); $event.stopPropagation()">Ocupar</button>
+        <button *ngIf="mesa.estado === 'LIBRE'" (click)="ejecutarAccion(mesa.id, 'reservar'); $event.stopPropagation()">Reservar</button>
+        <button *ngIf="mesa.estado === 'RESERVADA'" (click)="ejecutarAccion(mesa.id, 'ocupar'); $event.stopPropagation()">Llegó Cliente</button>
+        <button *ngIf="mesa.estado === 'OCUPADA'" (click)="ejecutarAccion(mesa.id, 'liberar'); $event.stopPropagation()">Liberar Mesa</button>
+        <button class="btn-close-overlay">Volver</button>
+      </div>
+
+      <div class="mesa-numero">#{{ mesa.numero }}</div>
+      <div class="mesa-capacidad">Personas: {{ mesa.capacidad }}</div>
+      <div class="mesa-badge">{{ mesa.estado }}</div>
+
+      <button class="btn-del" (click)="eliminarMesa(mesa.id, $event)">×</button>
+    </div>
+  </div>
+</div>

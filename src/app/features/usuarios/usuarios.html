@@ -31,7 +31,7 @@
           <option [value]="1">Administrador</option>
           <option [value]="2">Cajero</option>
           <option [value]="3">Cocina</option>
-         <option [value]="4">Mesero</option>
+          <option [value]="4">Mesero</option>
         </select>
       </div>
 
@@ -51,15 +51,19 @@
         <th class="id-column">ID</th>
         <th>USUARIO</th>
         <th>ROL</th>
-        <th class="text-center">ACCIONES</th> </tr>
+        <th class="text-center">ESTADO</th>
+        <th class="text-center">ACCIONES</th>
+      </tr>
       </thead>
       <tbody>
       @for (u of usuarios; track u.id) {
-      <tr>
+      <tr [class.user-inactive]="!u.activo">
         <td class="id-column">{{ u.id }}</td>
         <td>
           <div class="user-info">
-            <div class="avatar">{{ (u.nombre || u.username).charAt(0).toUpperCase() }}</div>
+            <div class="avatar" [class.avatar-off]="!u.activo">
+              {{ (u.nombre || u.username).charAt(0).toUpperCase() }}
+            </div>
             <div class="user-text">
               <span class="full-name">{{ u.nombre }}</span>
               <small class="user-tag">@{{ u.username }}</small>
@@ -67,10 +71,33 @@
           </div>
         </td>
         <td><span class="badge" [ngClass]="u.rol">{{ u.rol }}</span></td>
+
         <td class="text-center">
-          <button class="btn-delete" (click)="desactivarUsuario(u)" title="Desactivar">
-            🗑️
-          </button>
+            <span class="status-indicator" [class.active]="u.activo">
+              {{ u.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+
+        <td class="text-center">
+          <div class="action-buttons">
+            <button
+              class="btn-action"
+              [class.btn-deactivate]="u.activo"
+              [class.btn-activate]="!u.activo"
+              (click)="toggleEstado(u)"
+              [title]="u.activo ? 'Desactivar Usuario' : 'Activar Usuario'">
+
+              <span class="icon">{{ u.activo ? '🚫' : '✅' }}</span>
+
+            </button>
+
+            <button
+              class="btn-action btn-delete"
+              (click)="eliminarUsuario(u.id, u.username)"
+              title="Eliminar permanentemente">
+              🗑️
+            </button>
+          </div>
         </td>
       </tr>
       }
