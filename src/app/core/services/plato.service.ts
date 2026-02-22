@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PlatoRequestDTO, PlatoResponseDTO } from '../models/plato.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlatoService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:9090/api/platos';
+  private apiUrl = `${environment.apiUrl}/platos`;
 
   listarDisponibles(): Observable<PlatoResponseDTO[]> {
     return this.http.get<PlatoResponseDTO[]>(`${this.apiUrl}/disponibles`);

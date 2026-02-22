@@ -1,0 +1,80 @@
+<div class="pendientes-container">
+  <div class="header-section">
+    <h1>⏳ Pedidos Pendientes</h1>
+    <div class="filtros-tab">
+      <button *ngFor="let estado of ['CREADO', 'EN_PREPARACION', 'LISTO', 'ENTREGADO', 'PAGADO']"
+              [class.active]="filtroActual === estado"
+              (click)="cargarPedidos(estado)">
+        {{ estado === 'PAGADO' ? 'Historial' : estado.replace('_', ' ') }}
+      </button>
+    </div>
+  </div>
+
+  <div class="pedidos-grid" *ngIf="pedidos.length > 0">
+    <div class="pedido-card" *ngFor="let p of pedidos">
+      <div class="card-header">
+        <span class="mesa-tag">Mesa #{{ p.mesaNumero }}</span>
+        <span class="time-tag">Mesa {{ p.mesaNumero }}</span>
+      </div>
+
+      <div class="card-body">
+        <div class="detalle-item" *ngFor="let d of p.detalles">
+          <strong>{{ d.cantidad }}x</strong> {{ d.nombrePlato || d.plato }}
+        </div>
+        <div class="obs" *ngIf="p.observaciones">
+          "{{ p.observaciones }}"
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="total-info">
+          <small>Total</small>
+          <strong>S/ {{ p.total | number:'1.2-2' }}</strong>
+        </div>
+
+        <div class="acciones">
+          <button *ngIf="(esMesero || esAdmin) && p.estado === 'CREADO'"
+                  class="btn-edit"
+                  (click)="editarPedido(p)">
+            ✏️ Editar
+          </button>
+
+          <button *ngIf="!esMesero || esAdmin"
+                  class="btn-next"
+                  (click)="avanzarEstado(p)">
+            {{ p.estado === 'ENTREGADO' ? '💰 Cobrar' : '✅ Siguiente' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vacio" *ngIf="pedidos.length === 0">
+    <p>No hay pedidos en este estado.</p>
+  </div>
+
+  <div class="modal-yape" *ngIf="mostrarYape">
+    <div class="yape-overlay" (click)="mostrarYape = false"></div>
+    <div class="yape-card">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Icono_de_la_aplicaci%C3%B3n_Yape.png" alt="Yape Logo" class="yape-logo">
+
+      <div class="qr-container">
+        <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + numeroYape"
+             alt="QR de Pago"
+             class="qr-img">
+      </div>
+
+      <h3>Pago con Yape</h3>
+      <p>Escanea el QR o yapea al:</p>
+      <div class="yape-numero">{{ numeroYape }}</div>
+
+      <div class="yape-monto">
+        <small>Monto a yapear:</small>
+        <h2>S/ {{ pedidoParaPagar?.total | number:'1.2-2' }}</h2>
+      </div>
+
+      <button class="btn-confirmar-pago" (click)="confirmarPago()">CONFIRMAR RECEPCIÓN</button>
+      <button class="btn-cancelar" (click)="mostrarYape = false">Cancelar</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,150 @@
+<div class="main-wrapper">
+
+  <div *ngIf="!mostrarPasos" class="fade-in">
+    <div class="header-main">
+      <div class="header-text">
+        <h1>🍽️ Mis Servicios</h1>
+        <p>Gestiona tus pedidos activos del turno</p>
+      </div>
+      <button class="btn-nuevo" (click)="iniciarNuevoPedido()">
+        + Nuevo Pedido
+      </button>
+    </div>
+
+    <div class="pedidos-grid" *ngIf="misPedidos.length > 0">
+      <div *ngFor="let pedido of misPedidos" class="pedido-card-active">
+        <div class="card-header">
+          <span class="mesa-pill">Mesa {{pedido.mesaNumero}}</span>
+          <span class="status-pill" [attr.data-status]="pedido.estado">{{pedido.estado}}</span>
+        </div>
+
+        <div class="card-content">
+          <div class="info-row">
+            <span class="label">Total:</span>
+            <span class="value">S/ {{pedido.total | number:'1.2-2'}}</span>
+          </div>
+          <div class="items-preview">
+            <div *ngFor="let det of pedido.detalles.slice(0,3)" class="item-line">
+              • {{det.cantidad}}x {{det.plato}}
+            </div>
+            <small *ngIf="pedido.detalles.length > 3">y {{pedido.detalles.length - 3}} más...</small>
+          </div>
+        </div>
+
+        <button class="btn-detalles" (click)="verDetalles(pedido)">
+          Ver detalles / Agregar
+        </button>
+      </div>
+    </div>
+
+    <div class="empty-state-modern" *ngIf="misPedidos.length === 0">
+      <div class="empty-art">📝</div>
+      <h3>No hay pedidos activos</h3>
+      <p>Pulsa en "Nuevo Pedido" para comenzar.</p>
+    </div>
+  </div>
+
+  <div *ngIf="mostrarPasos" class="wizard-grid fade-in">
+
+    <div class="selection-side">
+      <div class="wizard-header">
+        <button class="btn-back" (click)="cancelarNuevo()">← Salir</button>
+        <div class="steps-indicator">
+          <span [class.active]="pasoActual === 1">1. Mesa</span>
+          <span [class.active]="pasoActual === 2">2. Carta</span>
+        </div>
+      </div>
+
+      <div *ngIf="pasoActual === 1" class="fade-in">
+        <h3 class="section-title">Selecciona una mesa libre</h3>
+        <div class="mesas-grid">
+          <div *ngFor="let m of mesasLibres" (click)="seleccionarMesa(m)" class="mesa-card">
+            <div class="mesa-badge">Mesa</div>
+            <div class="mesa-number">{{m.numero}}</div>
+            <div class="mesa-status">LIBRE</div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="pasoActual === 2" class="fade-in">
+        <div class="filter-container">
+          <input type="text" [(ngModel)]="terminoBusqueda" (input)="aplicarFiltros()" placeholder="Buscar plato...">
+          <div class="categories-chips">
+            <button [class.active]="categoriaSeleccionadaId === null" (click)="seleccionarCategoria(null)">Todas</button>
+            <button *ngFor="let cat of categorias" [class.active]="categoriaSeleccionadaId === cat.id" (click)="seleccionarCategoria(cat.id)">
+              {{cat.nombre}}
+            </button>
+          </div>
+        </div>
+
+        <div class="platos-grid">
+          <div *ngFor="let p of platosFiltrados" class="plato-card" (click)="agregarAlCarrito(p)">
+            <div class="plato-img-wrapper">
+              <img *ngIf="p.imagenBase64" [src]="'data:image/jpeg;base64,' + p.imagenBase64">
+              <span *ngIf="!p.imagenBase64">🍲</span>
+            </div>
+            <div class="plato-body">
+              <span class="plato-cat">{{p.categoria}}</span>
+              <h4>{{p.nombre}}</h4>
+              <div class="plato-footer">
+                <span class="price">S/ {{p.precio | number:'1.2-2'}}</span>
+                <div class="add-btn">+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-side" *ngIf="mesaSeleccionada">
+      <div class="cart-card">
+        <div class="cart-header">
+          <h4>Mesa #{{mesaSeleccionada.numero}}</h4>
+          <span>{{carrito.length}} productos</span>
+        </div>
+
+        <div class="cart-body">
+          <div *ngFor="let item of carrito; let i = index" class="cart-item">
+            <div class="item-main">
+              <strong>{{item.nombre}}</strong>
+              <span>S/ {{item.precio * item.cantidad | number:'1.2-2'}}</span>
+            </div>
+
+            <div class="item-actions">
+              <button type="button" (click)="quitarUno(i); $event.stopPropagation()">-</button>
+
+              <span class="qty-display">{{item.cantidad}}</span>
+
+              <button type="button" (click)="aumentarCantidad(i); $event.stopPropagation()">+</button>
+
+              <button type="button" class="del" (click)="eliminarDelCarrito(i); $event.stopPropagation()">🗑️</button>
+            </div>
+          </div>
+
+          <p *ngIf="carrito.length === 0" class="empty-cart-msg">No hay productos seleccionados</p>
+        </div>
+
+        <div class="cart-footer" *ngIf="carrito.length > 0">
+          <textarea [(ngModel)]="observaciones" placeholder="Notas adicionales..."></textarea>
+          <div class="total-box">
+            <span>Total:</span>
+            <strong>S/ {{calcularTotal() | number:'1.2-2'}}</strong>
+          </div>
+          <button class="btn-confirm" (click)="enviarPedido()">
+            {{ pedidoEnCursoId ? 'ACTUALIZAR PEDIDO' : 'CONFIRMAR PEDIDO' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay fade-in" *ngIf="mostrarModalEstado">
+    <div class="modal-content">
+      <div class="modal-icon">👨‍🍳</div>
+      <h2>Estado Actualizado</h2>
+      <p>{{ mensajeModal }}</p>
+      <div class="loader-bar"></div>
+    </div>
+  </div>
+
+</div>

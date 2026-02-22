@@ -8,8 +8,13 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),provideHttpClient(),
-    provideRouter(routes), provideHttpClient(withFetch()),provideClientHydration(withEventReplay())
-    ,provideHttpClient(withInterceptors([authInterceptor]))
+    provideBrowserGlobalErrorListeners(),
+    provideRouter(routes),
+    provideClientHydration(withEventReplay()),
+    // TODO EN UNO SOLO:
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([authInterceptor])
+    )
   ]
 };

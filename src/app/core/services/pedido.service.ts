@@ -1,0 +1,38 @@
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { PedidoRequestDTO, PedidoResponseDTO } from '../models/pedido.model'; // Ajusta la ruta si es necesario
+
+@Injectable({ providedIn: 'root' })
+export class PedidoService {
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/pedidos`;
+
+  // 1. Añadimos este método para que el Panel de Mesas pueda ver todo
+  listarTodos(): Observable<PedidoResponseDTO[]> {
+    return this.http.get<PedidoResponseDTO[]>(this.apiUrl);
+  }
+
+  crear(pedido: PedidoRequestDTO): Observable<PedidoResponseDTO> {
+    return this.http.post<PedidoResponseDTO>(this.apiUrl, pedido);
+  }
+
+  cambiarEstado(id: number, estado: string): Observable<PedidoResponseDTO> {
+    return this.http.patch<PedidoResponseDTO>(`${this.apiUrl}/${id}/estado?estado=${estado}`, {});
+  }
+
+  listarPorEstado(estado: string): Observable<PedidoResponseDTO[]> {
+    return this.http.get<PedidoResponseDTO[]>(`${this.apiUrl}?estado=${estado}`);
+  }
+
+  obtenerPorId(id: number): Observable<PedidoResponseDTO> {
+    return this.http.get<PedidoResponseDTO>(`${this.apiUrl}/${id}`);
+  }
+
+  actualizar(id: number, pedido: any): Observable<any> {
+    // Asegúrate de que 'id' sea un número y no un objeto
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.put(url, pedido);
+  }
+}

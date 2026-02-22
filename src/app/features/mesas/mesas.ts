@@ -2,8 +2,10 @@ import { Component, OnInit, inject, ChangeDetectorRef, PLATFORM_ID, Inject } fro
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MesaService } from '../../core/services/mesa.service';
+import { PedidoService } from '../../core/services/pedido.service';
 import { WebsocketService } from '../../core/services/WebsocketService';
 import { MesaResponseDTO, MesaRequestDTO, MesaSocketDTO } from '../../core/models/mesa.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-mesas',
@@ -13,14 +15,13 @@ import { MesaResponseDTO, MesaRequestDTO, MesaSocketDTO } from '../../core/model
   styleUrls: ['./mesas.css']
 })
 export class MesasComponent implements OnInit {
-  mesas: MesaResponseDTO[] = [];
+  mesas: any[] = [];
   mostrarFormulario = false;
-  // Controla qué mesa muestra sus botones de acción
   mesaActivaId: number | null = null;
-
   nuevaMesa: MesaRequestDTO = { numero: 0, capacidad: 4 };
 
   private mesaService = inject(MesaService);
+  private pedidoService = inject(PedidoService);
   private wsService = inject(WebsocketService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -28,19 +29,62 @@ export class MesasComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.cargarMesas();
+      this.cargarDatos();
       this.configurarWebsocket();
     }
   }
 
-  // --- LÓGICA DE INTERACCIÓN DINÁMICA ---
+  // --- CARGA DE DATOS CRUZADOS ---
+  cargarDatos(): void {
+    // Usamos forkJoin para traer mesas y pedidos al mismo tiempo y compararlos
+    forkJoin({
+      mesas: this.mesaService.listarTodas(),
+      pedidosActivos: this.pedidoService.listarTodos() // Asegúrate que este método traiga los CREADOS/EN_PREPARACION
+    }).subscribe({
+      next: (res) => {
+        this.mesas = res.mesas.map(mesa => {
+          // Buscamos si hay un pedido vinculado a esta mesa que no esté PAGADO ni CANCELADO
+          const pedido = res.pedidosActivos.find(p =>
+            p.mesaNumero === mesa.numero &&
+            (p.estado === 'CREADO' || p.estado === 'EN_PREPARACION')
+          );
+          return {
+            ...mesa,
+            tienePedidoActivo: !!pedido,
+            pedidoId: pedido ? pedido.id : null
+          };
+        }).sort((a, b) => a.numero - b.numero);
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
+  configurarWebsocket(): void {
+    // Escuchar cambios en mesas
+    this.wsService.watch('/topic/mesas').subscribe(() => {
+      this.cargarDatos();
+    });
+
+    // Escuchar cambios en pedidos (si un pedido cambia a 'PAGADO', la mesa se debe poder liberar)
+    this.wsService.getPedidoCambios().subscribe(() => {
+      this.cargarDatos();
+    });
+  }
+
+  // --- ACCIONES ---
   seleccionarMesa(id: number): void {
-    // Si haces clic en la misma mesa, se cierra. Si no, se abre la nueva.
     this.mesaActivaId = (this.mesaActivaId === id) ? null : id;
   }
 
   ejecutarAccion(id: number, accion: 'ocupar' | 'reservar' | 'liberar'): void {
+    // Si intentan liberar una mesa con pedido, bloqueamos
+    const mesa = this.mesas.find(m => m.id === id);
+    if (accion === 'liberar' && mesa?.tienePedidoActivo) {
+      alert(`⛔ No puedes liberar la Mesa ${mesa.numero} porque tiene un pedido pendiente de pago.`);
+      this.mesaActivaId = null;
+      return;
+    }
+
     const obs = {
       'ocupar': this.mesaService.ocupar(id),
       'reservar': this.mesaService.reservar(id),
@@ -49,34 +93,9 @@ export class MesasComponent implements OnInit {
 
     obs.subscribe({
       next: () => {
-        this.mesaActivaId = null; // Cerramos el menú al terminar
-        this.cdr.detectChanges();
+        this.mesaActivaId = null;
+        this.cargarDatos(); // Recargamos para refrescar estados
       }
-    });
-  }
-
-  // --- MÉTODOS EXISTENTES MEJORADOS ---
-
-  cargarMesas(): void {
-    this.mesaService.listarTodas().subscribe({
-      next: (data) => {
-        this.mesas = data.sort((a, b) => a.numero - b.numero);
-        this.cdr.detectChanges();
-      }
-    });
-  }
-
-  configurarWebsocket(): void {
-    this.wsService.watch('/topic/mesas').subscribe((dto: any) => {
-      const mesaSocket = dto as MesaSocketDTO;
-      if (mesaSocket.evento === 'CREADA') this.mesas.push(mesaSocket);
-      else if (mesaSocket.evento === 'ELIMINADA') this.mesas = this.mesas.filter(m => m.id !== mesaSocket.id);
-      else if (mesaSocket.evento === 'ACTUALIZADA') {
-        const idx = this.mesas.findIndex(m => m.id === mesaSocket.id);
-        if (idx !== -1) this.mesas[idx] = mesaSocket;
-      }
-      this.mesas.sort((a, b) => a.numero - b.numero);
-      this.cdr.detectChanges();
     });
   }
 
@@ -86,19 +105,22 @@ export class MesasComponent implements OnInit {
       return;
     }
     this.mesaService.crear(this.nuevaMesa).subscribe({
-      next: () => this.nuevaMesa = { numero: 0, capacidad: 4 },
-      error: () => alert("Error al crear")
+      next: () => {
+        this.nuevaMesa = { numero: 0, capacidad: 4 };
+        this.mostrarFormulario = false;
+      }
     });
-    this.mostrarFormulario = false;
   }
 
   eliminarMesa(id: number, event: Event): void {
-    event.stopPropagation(); // Evita que se abra el menú de la mesa
-    if (confirm('¿Eliminar mesa?')) {
-      this.mesaService.eliminar(id).subscribe(() => {
-        this.mesas = this.mesas.filter(m => m.id !== id);
-        this.cdr.detectChanges();
-      });
+    event.stopPropagation();
+    const mesa = this.mesas.find(m => m.id === id);
+    if (mesa?.tienePedidoActivo) {
+      alert("No puedes eliminar una mesa con pedidos activos.");
+      return;
+    }
+    if (confirm('¿Eliminar mesa permanentemente?')) {
+      this.mesaService.eliminar(id).subscribe();
     }
   }
 }

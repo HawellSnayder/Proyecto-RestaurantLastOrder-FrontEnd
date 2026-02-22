@@ -1,0 +1,129 @@
+.pendientes-container { padding: 20px; background: white; min-height: 100vh; }
+
+.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.filtros-tab { display: flex; gap: 10px; background: #f1f5f9; padding: 5px; border-radius: 15px; }
+.filtros-tab button { padding: 10px 20px; border: none; background: transparent; border-radius: 12px; cursor: pointer; font-weight: 600; transition: 0.3s; color: #64748b; }
+.filtros-tab button.active { background: #ffffff; color: #7c3aed; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+/* Grid de Pedidos */
+.pedidos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.pedido-card { background: #f8fafc; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; transition: transform 0.2s; }
+.pedido-card:hover { transform: translateY(-5px); }
+
+.card-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.mesa-tag { background: #7c3aed; color: white; padding: 5px 12px; border-radius: 8px; font-weight: bold; }
+.time-tag { color: #64748b; font-size: 0.85rem; }
+
+.card-body { flex-grow: 1; margin-bottom: 20px; }
+.detalle-item { margin-bottom: 5px; font-size: 0.95rem; color: #1e293b; }
+.obs { font-style: italic; color: #64748b; font-size: 0.85rem; margin-top: 10px; background: #f1f5f9; padding: 8px; border-radius: 8px; }
+
+/* Footer y Botones */
+.card-footer { display: flex; flex-direction: column; gap: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0; }
+.total-info { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.total-info strong { font-size: 1.2rem; color: #1e293b; }
+
+.acciones { display: flex; gap: 10px; width: 100%; }
+
+.btn-next { flex: 2; background: #7c3aed; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+.btn-next:hover { background: #6d28d9; }
+
+.btn-edit { flex: 1; background: #f59e0b; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+.btn-edit:hover { background: #d97706; }
+
+/* Modal Yape Mejorado */
+.modal-yape { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.yape-card { background: white; padding: 30px; border-radius: 25px; text-align: center; width: 340px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+.yape-logo { width: 100px; margin-bottom: 10px; }
+
+.qr-container {
+  background: #ffffff; /* Obligatorio: Blanco para que el escáner detecte el contraste */
+  padding: 20px;       /* Espacio alrededor del QR para que la cámara no se confunda */
+  border-radius: 12px;
+  margin: 20px auto;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #eeeeee;
+}
+.qr-img {
+  width: 200px;
+  height: 200px;
+  image-rendering: pixelated; /* Esto hace que los bordes del QR se vean más nítidos */
+}
+
+.yape-numero { background: #742484; color: white; font-size: 1.4rem; padding: 12px; border-radius: 15px; margin: 10px 0; font-family: 'Courier New', Courier, monospace; letter-spacing: 2px; }
+.yape-monto { margin-bottom: 20px; }
+.yape-monto h2 { color: #1e293b; font-size: 2rem; margin: 0; }
+
+.btn-confirmar-pago { background: #00d1c4; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+.btn-confirmar-pago:hover { background: #00b8ad; transform: scale(1.02); }
+
+.btn-cancelar { background: transparent; color: #ef4444; border: none; margin-top: 15px; cursor: pointer; font-weight: 600; }
+.btn-cancelar:hover { text-decoration: underline; }
+
+.vacio { text-align: center; padding: 50px; color: #64748b; font-size: 1.2rem; }
+/* --- DISEÑO PARA MÓVILES --- */
+@media (max-width: 768px) {
+  .pendientes-container {
+    padding: 10px; /* Menos espacio en los bordes */
+  }
+
+  .header-section {
+    flex-direction: column; /* Título arriba, filtros abajo */
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .filtros-tab {
+    width: 100%;
+    overflow-x: auto; /* Permite deslizar los filtros si no caben */
+    white-space: nowrap;
+    display: flex;
+    padding: 8px;
+  }
+
+  .filtros-tab button {
+    padding: 8px 15px;
+    font-size: 0.85rem;
+    flex-shrink: 0; /* Evita que los botones se achiquen */
+  }
+
+  .pedidos-grid {
+    grid-template-columns: 1fr; /* Una sola columna de pedidos */
+    gap: 15px;
+  }
+
+  .pedido-card {
+    padding: 15px;
+    border-radius: 15px;
+  }
+
+  /* Modal de Yape en móvil */
+  .yape-card {
+    width: 95%; /* Ocupa casi todo el ancho */
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .qr-img {
+    width: 150px; /* QR un poco más pequeño para que quepa todo */
+    height: 150px;
+  }
+
+  .yape-numero {
+    font-size: 1.2rem;
+  }
+
+  .yape-monto h2 {
+    font-size: 1.6rem;
+  }
+
+  /* Botones más grandes para dedos (touch friendly) */
+  .btn-next, .btn-edit, .btn-confirmar-pago {
+    padding: 14px;
+    font-size: 1rem;
+  }
+}

@@ -1,17 +1,33 @@
 <div class="mesas-page-wrapper">
   <div class="mesas-header">
-    <h1>Panel de Mesas</h1>
+    <div class="header-info">
+      <h1>Panel de Mesas</h1>
+      <p>Gestión de disponibilidad y atención al cliente</p>
+    </div>
     <button class="btn-add-mesa" (click)="mostrarFormulario = !mostrarFormulario">
       {{ mostrarFormulario ? '✕ Cancelar' : '＋ Nueva Mesa' }}
     </button>
   </div>
 
-  <div *ngIf="mostrarFormulario" class="card-formulario">
+  <div *ngIf="mostrarFormulario" class="card-formulario fade-in">
+    <h3>Registrar Nueva Mesa</h3>
     <div class="form-row">
-      <input type="number" class="custom-input" [(ngModel)]="nuevaMesa.numero" placeholder="Nº Mesa">
-      <input type="number" class="custom-input" [(ngModel)]="nuevaMesa.capacidad" placeholder="Capacidad">
-      <button class="btn-add-mesa" (click)="guardarMesa()">Confirmar</button>
+      <div class="input-group">
+        <label>Número de Mesa</label>
+        <input type="number" class="custom-input" [(ngModel)]="nuevaMesa.numero" placeholder="Ej: 05">
+      </div>
+      <div class="input-group">
+        <label>Capacidad</label>
+        <input type="number" class="custom-input" [(ngModel)]="nuevaMesa.capacidad" placeholder="Ej: 4">
+      </div>
+      <button class="btn-confirm-add" (click)="guardarMesa()">Confirmar Registro</button>
     </div>
+  </div>
+
+  <div class="mesas-stats">
+    <div class="stat-item"><span class="dot libre"></span> Libres</div>
+    <div class="stat-item"><span class="dot ocupada"></span> Ocupadas</div>
+    <div class="stat-item"><span class="dot reservada"></span> Reservadas</div>
   </div>
 
   <div class="mesas-grid">
@@ -21,18 +37,43 @@
          (click)="seleccionarMesa(mesa.id)">
 
       <div class="mesa-actions-overlay" *ngIf="mesaActivaId === mesa.id">
-        <button *ngIf="mesa.estado === 'LIBRE'" (click)="ejecutarAccion(mesa.id, 'ocupar'); $event.stopPropagation()">Ocupar</button>
-        <button *ngIf="mesa.estado === 'LIBRE'" (click)="ejecutarAccion(mesa.id, 'reservar'); $event.stopPropagation()">Reservar</button>
-        <button *ngIf="mesa.estado === 'RESERVADA'" (click)="ejecutarAccion(mesa.id, 'ocupar'); $event.stopPropagation()">Llegó Cliente</button>
-        <button *ngIf="mesa.estado === 'OCUPADA'" (click)="ejecutarAccion(mesa.id, 'liberar'); $event.stopPropagation()">Liberar Mesa</button>
-        <button class="btn-close-overlay">Volver</button>
+        <div class="overlay-content">
+          <button *ngIf="mesa.estado === 'LIBRE'" class="btn-action" (click)="ejecutarAccion(mesa.id, 'ocupar'); $event.stopPropagation()">
+            📌 Ocupar Mesa
+          </button>
+          <button *ngIf="mesa.estado === 'LIBRE'" class="btn-action" (click)="ejecutarAccion(mesa.id, 'reservar'); $event.stopPropagation()">
+            📅 Reservar
+          </button>
+          <button *ngIf="mesa.estado === 'RESERVADA'" class="btn-action" (click)="ejecutarAccion(mesa.id, 'ocupar'); $event.stopPropagation()">
+            🙋‍♂️ Llegó Cliente
+          </button>
+
+          <button *ngIf="mesa.estado === 'OCUPADA'"
+                  class="btn-action"
+                  [class.disabled-action]="mesa.tienePedidoActivo"
+                  (click)="ejecutarAccion(mesa.id, 'liberar'); $event.stopPropagation()">
+            {{ mesa.tienePedidoActivo ? '⚠️ Cuenta Pendiente' : '🔓 Liberar Mesa' }}
+          </button>
+
+          <button class="btn-close-overlay" (click)="mesaActivaId = null; $event.stopPropagation()">
+            Volver
+          </button>
+        </div>
       </div>
 
-      <div class="mesa-numero">#{{ mesa.numero }}</div>
-      <div class="mesa-capacidad">Personas: {{ mesa.capacidad }}</div>
-      <div class="mesa-badge">{{ mesa.estado }}</div>
+      <div class="alert-icon" *ngIf="mesa.tienePedidoActivo">🔔</div>
 
-      <button class="btn-del" (click)="eliminarMesa(mesa.id, $event)">×</button>
+      <div class="mesa-info">
+        <span class="mesa-label">MESA</span>
+        <div class="mesa-numero">{{ mesa.numero }}</div>
+        <div class="mesa-capacidad">Capacidad: {{ mesa.capacidad }} pers.</div>
+      </div>
+
+      <div class="mesa-badge-container">
+        <span class="mesa-badge">{{ mesa.estado }}</span>
+      </div>
+
+      <button class="btn-del" (click)="eliminarMesa(mesa.id, $event)">✕</button>
     </div>
   </div>
 </div>
