@@ -1,4 +1,4 @@
-/* --- CONFIGURACIÓN GENERAL --- */
+
 .mesas-page-wrapper {
   padding: 2.5rem;
   background: #f8fafc;
@@ -7,7 +7,7 @@
   color: #1e293b;
 }
 
-/* --- CABECERA --- */
+
 .mesas-header {
   display: flex;
   justify-content: space-between;
@@ -47,7 +47,7 @@
   transform: translateY(-2px);
 }
 
-/* --- FORMULARIO DE REGISTRO --- */
+
 .card-formulario {
   background: white;
   padding: 1.5rem;
@@ -110,7 +110,7 @@
   background: #1e293b;
 }
 
-/* --- STATS BAR --- */
+
 .mesas-stats {
   display: flex;
   gap: 24px;
@@ -141,7 +141,7 @@
 .dot.ocupada { background: #ef4444; }
 .dot.reservada { background: #f59e0b; }
 
-/* --- GRID Y CARDS --- */
+
 .mesas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -168,12 +168,11 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* ESTADOS DINÁMICOS */
+
 .libre { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
 .ocupada { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
 .reservada { background: #fffbeb; border-color: #fef3c7; color: #92400e; }
 
-/* CONTENIDO DEL CARD */
 .mesa-info { text-align: center; }
 
 .mesa-label {
@@ -208,7 +207,6 @@
   border: 1px solid currentColor;
 }
 
-/* --- OVERLAY --- */
 .mesa-actions-overlay {
   position: absolute;
   inset: 0;
@@ -258,7 +256,6 @@
   opacity: 0.7;
 }
 
-/* --- ICONOS Y OTROS --- */
 .alert-icon {
   position: absolute;
   top: 15px;
@@ -289,7 +286,6 @@
   color: white;
 }
 
-/* ANIMACIONES */
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }

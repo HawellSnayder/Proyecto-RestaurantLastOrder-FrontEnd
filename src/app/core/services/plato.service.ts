@@ -15,10 +15,8 @@ export class PlatoService {
     return this.http.get<PlatoResponseDTO[]>(`${this.apiUrl}/disponibles`);
   }
 
-  // src/app/core/services/plato.service.ts
 
   crearConImagen(formData: FormData): Observable<PlatoResponseDTO> {
-    // NO añadas headers manualmente, Angular lo hace solo al ver el FormData
     return this.http.post<PlatoResponseDTO>(this.apiUrl, formData);
   }
 
@@ -30,7 +28,7 @@ export class PlatoService {
     return this.http.patch<void>(`${this.apiUrl}/${id}/disponibilidad?disponible=${disponible}`, {});
   }
   listarTodos(): Observable<PlatoResponseDTO[]> {
-    return this.http.get<PlatoResponseDTO[]>(this.apiUrl); // Apunta al @GetMapping base
+    return this.http.get<PlatoResponseDTO[]>(this.apiUrl);
   }
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);

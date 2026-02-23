@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core'; // <--- Importa Inject y PLATFORM_ID
-import { isPlatformBrowser, CommonModule } from '@angular/common'; // <--- Importa isPlatformBrowser
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 
 @Component({
@@ -14,14 +14,12 @@ export class LayoutComponent implements OnInit {
   username: string = '';
   menuItems: any[] = [];
 
-  // Inyectamos el PLATFORM_ID en el constructor
   constructor(
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit() {
-    // Verificamos si estamos en el navegador antes de usar localStorage
     if (isPlatformBrowser(this.platformId)) {
       this.rol = localStorage.getItem('rol') || '';
       this.username = localStorage.getItem('username') || 'Usuario';
@@ -45,7 +43,6 @@ export class LayoutComponent implements OnInit {
     const rolSuperior = this.rol.toUpperCase();
         this.menuItems = opciones.filter(opt => opt.roles.includes(rolSuperior));
 
-        // LOG DE DEPURACIÓN: Si ves la consola (F12), verás qué está pasando
         console.log('Tu rol actual es:', rolSuperior);
         console.log('Items de menú permitidos:', this.menuItems);
   }

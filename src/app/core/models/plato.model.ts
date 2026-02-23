@@ -1,4 +1,4 @@
-// src/app/core/models/plato.model.ts
+
 
 export interface PlatoResponseDTO {
   id: number;
@@ -6,7 +6,7 @@ export interface PlatoResponseDTO {
   precio: number;
   categoria: string;
   disponible: boolean;
-  imagenBase64?: string; // <--- Asegúrate de que esta línea esté presente
+  imagenBase64?: string;
 }
 
 export interface PlatoRequestDTO {
@@ -14,8 +14,6 @@ export interface PlatoRequestDTO {
   precio: number;
   categoriaId: number;
   disponible: boolean;
-  // Nota: Para el envío usamos FormData en el servicio,
-  // pero esta interfaz sirve para mantener la estructura en el componente.
 }
 
 export interface PlatoSocketDTO {
@@ -25,6 +23,6 @@ export interface PlatoSocketDTO {
   categoriaId: number;
   categoriaNombre: string;
   disponible: boolean;
-  imagenBase64?: string; // 🔥 También lo agregamos para actualizaciones en tiempo real
+  imagenBase64?: string;
   evento: 'CREADO' | 'ACTUALIZADO' | 'DISPONIBILIDAD_CAMBIADA';
 }

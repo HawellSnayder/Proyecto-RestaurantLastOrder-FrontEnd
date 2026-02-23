@@ -43,7 +43,7 @@
   border-radius: 12px;
   padding: 20px;
   display: flex;
-  flex-direction: column; /* Cambiado a columna para mejor control de botones */
+  flex-direction: column;
   gap: 15px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   border-bottom: 4px solid #1a1a2e;

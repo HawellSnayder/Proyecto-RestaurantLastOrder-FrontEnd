@@ -7,8 +7,6 @@ export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
 
-  // Si estamos en el servidor, permitimos la carga inicial
-  // (la verdadera validación ocurrirá en el navegador)
   if (!isPlatformBrowser(platformId)) {
     return true;
   }

@@ -25,18 +25,16 @@ export class LoginComponent {
   onLogin() {
     this.auth.login({ username: this.user, password: this.password }).subscribe({
       next: (res: LoginResponseDTO) => {
-        // Solo operamos con localStorage si estamos en el navegador
+
         if (isPlatformBrowser(this.platformId)) {
           localStorage.setItem('token', res.token);
           localStorage.setItem('rol', res.rol);
           localStorage.setItem('username', this.user);
           localStorage.setItem('user', JSON.stringify({ username: this.user, rol: res.rol }));
 
-          // Definimos la ruta destino según el rol
+
           const rutaDestino = res.rol === 'ADMIN' ? '/usuarios' : '/pedidos';
 
-          // Usamos window.location.assign para forzar la recarga completa.
-          // Esto asegura que el WebsocketService se reinicie y lea el nuevo localStorage.
           window.location.assign(rutaDestino);
         }
       },

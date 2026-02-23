@@ -1,13 +1,12 @@
-// Coincide con UsuarioResponseDTO
+
 export interface UsuarioResponseDTO {
   id: number;
   nombre: string;
   username: string;
   activo: boolean;
-  rol: string; // Aquí llega directo "ADMIN", "MESERO", etc.
+  rol: string;
 }
 
-// Coincide con CrearUsuarioRequestDTO
 export interface CrearUsuarioRequestDTO {
   nombre: string;
   username: string;

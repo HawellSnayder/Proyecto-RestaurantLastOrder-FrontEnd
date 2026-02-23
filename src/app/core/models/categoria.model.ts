@@ -1,4 +1,4 @@
-// src/app/core/models/categoria.model.ts
+
 export interface CategoriaResponseDTO {
   id: number;
   nombre: string;

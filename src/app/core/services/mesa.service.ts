@@ -25,7 +25,6 @@ export class MesaService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // Métodos de cambio de estado
   reservar(id: number): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${id}/reservar`, {});
   }

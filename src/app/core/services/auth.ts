@@ -16,7 +16,6 @@ export class AuthService {
   login(credentials: LoginRequestDTO): Observable<LoginResponseDTO> {
     return this.http.post<LoginResponseDTO>(this.apiUrl, credentials).pipe(
       tap(res => {
-        // Limpieza preventiva: borra lo viejo antes de poner lo nuevo
         const cleanToken = res.token.trim().replace(/^"|"$/g, '');
         localStorage.clear();
         localStorage.setItem('token', cleanToken);

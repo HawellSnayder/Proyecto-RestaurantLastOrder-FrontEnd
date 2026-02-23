@@ -12,7 +12,7 @@
   font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
-/* --- HEADER --- */
+
 .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 .header-text h1 { margin: 0; font-size: 1.8rem; font-weight: 800; }
 .header-text p { color: #64748b; margin-top: 4px; }
@@ -24,7 +24,6 @@
 }
 .btn-nuevo:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(124, 58, 237, 0.4); }
 
-/* --- GRID DE PEDIDOS ACTIVOS --- */
 .pedidos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -66,14 +65,12 @@
 .steps-indicator span { padding: 6px 14px; background: #e2e8f0; border-radius: 8px; font-size: 0.85rem; color: #94a3b8; font-weight: bold; }
 .steps-indicator span.active { background: var(--primary); color: white; }
 
-/* --- MESAS --- */
 .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; }
 .mesa-card { background: white; padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; border: 2px solid transparent; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; }
 .mesa-card:hover { border-color: var(--primary); transform: translateY(-3px); }
 .mesa-number { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
 .mesa-status { color: #10b981; font-weight: bold; font-size: 0.7rem; }
 
-/* --- FILTROS Y PLATOS --- */
 .filter-container { margin-bottom: 20px; }
 .search-box input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
 .categories-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; }
@@ -91,7 +88,6 @@
 .price { font-weight: 800; }
 .add-btn { background: var(--primary); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-/* --- CARRITO --- */
 .cart-card { background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; position: sticky; top: 20px; }
 .cart-header { background: #1e293b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; }
 .cart-body { padding: 20px; max-height: 400px; overflow-y: auto; }
@@ -105,7 +101,6 @@
 .total-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 1.1rem; }
 .btn-confirm { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; }
 
-/* --- MODAL Y OTROS --- */
 .empty-state-modern { text-align: center; padding: 60px 20px; background: white; border-radius: 25px; border: 2px dashed #cbd5e1; margin-top: 20px; }
 .empty-art { font-size: 3rem; margin-bottom: 10px; }
 

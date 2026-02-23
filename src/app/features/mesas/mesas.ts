@@ -34,16 +34,14 @@ export class MesasComponent implements OnInit {
     }
   }
 
-  // --- CARGA DE DATOS CRUZADOS ---
+
   cargarDatos(): void {
-    // Usamos forkJoin para traer mesas y pedidos al mismo tiempo y compararlos
     forkJoin({
       mesas: this.mesaService.listarTodas(),
-      pedidosActivos: this.pedidoService.listarTodos() // Asegúrate que este método traiga los CREADOS/EN_PREPARACION
+      pedidosActivos: this.pedidoService.listarTodos()
     }).subscribe({
       next: (res) => {
         this.mesas = res.mesas.map(mesa => {
-          // Buscamos si hay un pedido vinculado a esta mesa que no esté PAGADO ni CANCELADO
           const pedido = res.pedidosActivos.find(p =>
             p.mesaNumero === mesa.numero &&
             (p.estado === 'CREADO' || p.estado === 'EN_PREPARACION')
@@ -60,24 +58,20 @@ export class MesasComponent implements OnInit {
   }
 
   configurarWebsocket(): void {
-    // Escuchar cambios en mesas
     this.wsService.watch('/topic/mesas').subscribe(() => {
       this.cargarDatos();
     });
 
-    // Escuchar cambios en pedidos (si un pedido cambia a 'PAGADO', la mesa se debe poder liberar)
     this.wsService.getPedidoCambios().subscribe(() => {
       this.cargarDatos();
     });
   }
 
-  // --- ACCIONES ---
   seleccionarMesa(id: number): void {
     this.mesaActivaId = (this.mesaActivaId === id) ? null : id;
   }
 
   ejecutarAccion(id: number, accion: 'ocupar' | 'reservar' | 'liberar'): void {
-    // Si intentan liberar una mesa con pedido, bloqueamos
     const mesa = this.mesas.find(m => m.id === id);
     if (accion === 'liberar' && mesa?.tienePedidoActivo) {
       alert(`⛔ No puedes liberar la Mesa ${mesa.numero} porque tiene un pedido pendiente de pago.`);
@@ -94,7 +88,7 @@ export class MesasComponent implements OnInit {
     obs.subscribe({
       next: () => {
         this.mesaActivaId = null;
-        this.cargarDatos(); // Recargamos para refrescar estados
+        this.cargarDatos();
       }
     });
   }

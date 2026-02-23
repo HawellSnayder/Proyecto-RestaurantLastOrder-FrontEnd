@@ -17,7 +17,6 @@ import { PlatoResponseDTO } from '../../../core/models/plato.model';
   styleUrls: ['./crear-pedido.css']
 })
 export class CrearPedidoComponent implements OnInit {
-  // 1. PROPIEDADES
   mostrarPasos = false;
   pasoActual = 1;
   mostrarModalEstado = false;
@@ -45,7 +44,7 @@ export class CrearPedidoComponent implements OnInit {
 
 
   public agregarAlCarrito(plato: PlatoResponseDTO): void {
-    // Según tu interfaz PlatoResponseDTO, el campo ES 'id'
+
     const idFinal = plato.id;
 
     const index = this.carrito.findIndex(item => item.platoId === idFinal);
@@ -89,7 +88,6 @@ export class CrearPedidoComponent implements OnInit {
     return this.carrito.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
   }
 
-  // 4. CICLO DE VIDA Y OTROS
   ngOnInit() {
     this.cargarMisPedidos();
     this.cargarCategorias();
@@ -181,7 +179,6 @@ export class CrearPedidoComponent implements OnInit {
     this.mesaSeleccionada = { numero: pedido.mesaNumero };
     this.observaciones = pedido.observaciones;
 
-    // Según tu interfaz DetallePedidoResponseDTO, el campo ES 'platoId'
     this.carrito = pedido.detalles.map(det => ({
       platoId: det.platoId,
       nombre: det.plato,
@@ -195,7 +192,6 @@ export class CrearPedidoComponent implements OnInit {
   enviarPedido() {
     if (this.carrito.length === 0 || !this.mesaSeleccionada) return;
 
-    // Construimos el objeto cumpliendo estrictamente con PedidoRequestDTO
     const request: PedidoRequestDTO = {
       mesaNumero: this.mesaSeleccionada.numero,
       observaciones: this.observaciones,

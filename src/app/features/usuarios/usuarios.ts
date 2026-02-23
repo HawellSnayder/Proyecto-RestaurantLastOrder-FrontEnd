@@ -33,7 +33,6 @@ export class UsuariosComponent implements OnInit {
   private inicializarComponente(): void {
       this.cargarUsuarios();
 
-      // Escucha de WebSockets
       this.wsService.getDesactivaciones().subscribe({
         next: (idRecibido) => {
           if (idRecibido) {
@@ -43,7 +42,6 @@ export class UsuariosComponent implements OnInit {
       });
     }
   ngOnInit(): void {
-      // Es vital verificar el platformId para SSR
       if (isPlatformBrowser(this.platformId)) {
         this.inicializarComponente();
       }
@@ -55,11 +53,9 @@ export class UsuariosComponent implements OnInit {
         next: (data: UsuarioResponseDTO[]) => {
           this.usuarios = data;
           this.cargando = false;
-
-          // Ejecutamos esto en un pequeño timeout para asegurar que el DOM esté listo
           setTimeout(() => {
-            this.cdr.markForCheck(); // Marca para verificar
-            this.cdr.detectChanges(); // Fuerza el renderizado
+            this.cdr.markForCheck();
+            this.cdr.detectChanges();
           }, 0);
         },
         error: (err) => {
@@ -70,7 +66,6 @@ export class UsuariosComponent implements OnInit {
       });
     }
 
-  // FIJATE AQUÍ: He arreglado la lógica para que sirva para ambos estados
   toggleEstado(u: UsuarioResponseDTO) {
     const proximoEstado = !u.activo;
     const accionTexto = proximoEstado ? 'activar' : 'desactivar';
@@ -80,7 +75,7 @@ export class UsuariosComponent implements OnInit {
         // Lógica para ACTIVAR
         this.usuarioService.activar(u.id).subscribe({
           next: () => {
-            u.activo = true; // Actualizamos la vista
+            u.activo = true;
             this.cdr.detectChanges();
           },
           error: (err) => alert('Error al activar el usuario')
@@ -89,7 +84,7 @@ export class UsuariosComponent implements OnInit {
         // Lógica para DESACTIVAR
         this.usuarioService.desactivarUsuario(u.id).subscribe({
           next: () => {
-            u.activo = false; // Actualizamos la vista
+            u.activo = false;
             this.cdr.detectChanges();
           },
           error: (err) => alert('Error al desactivar el usuario')
