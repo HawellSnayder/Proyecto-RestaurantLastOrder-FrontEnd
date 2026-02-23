@@ -6,7 +6,7 @@ import { PedidoService } from '../../../core/services/pedido.service';
 import { PlatoService } from '../../../core/services/plato.service';
 import { CategoriaService } from '../../../core/services/categoria.service';
 import { WebsocketService } from '../../../core/services/WebsocketService';
-import { PedidoResponseDTO } from '../../../core/models/pedido.model';
+import { PedidoResponseDTO,PedidoRequestDTO } from '../../../core/models/pedido.model';
 import { PlatoResponseDTO } from '../../../core/models/plato.model';
 
 @Component({
@@ -34,7 +34,7 @@ export class CrearPedidoComponent implements OnInit {
   observaciones: string = '';
   pedidoEnCursoId: number | null = null;
 
-  // 2. INYECCIONES
+
   private mesaService = inject(MesaService);
   private pedidoService = inject(PedidoService);
   private platoService = inject(PlatoService);
@@ -42,7 +42,7 @@ export class CrearPedidoComponent implements OnInit {
   private wsService = inject(WebsocketService);
   private cdr = inject(ChangeDetectorRef);
 
-  // 3. FUNCIONES DEL CARRITO (Movidas arriba para asegurar visibilidad)
+
 
   public agregarAlCarrito(plato: PlatoResponseDTO): void {
     // Según tu interfaz PlatoResponseDTO, el campo ES 'id'
@@ -191,8 +191,6 @@ export class CrearPedidoComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-    this.cdr.detectChanges();
-  }
 
   enviarPedido() {
     if (this.carrito.length === 0 || !this.mesaSeleccionada) return;
